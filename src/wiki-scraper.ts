@@ -35,7 +35,7 @@ export class WikiScraper {
     const response = await this.wikiApiClient.renderText(`<pagelist category="${category}" filter="${filter}"></pagelist>`);
 
     if (!response.html || response.html === '') {
-      throw new Error(`Could not get pages in category '${category}'`);
+      throw new Error(`Could not get pages in category '${category}' with filter '${filter}'`);
     }
 
     const pageUrls: Array<string> = [];
