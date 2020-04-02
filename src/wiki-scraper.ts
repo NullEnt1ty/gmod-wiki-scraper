@@ -31,6 +31,19 @@ export class WikiScraper {
     );
   }
 
+  public async getLibraryFunctions(): Promise<Array<FunctionPage>> {
+    const libraryFunctionPageUrls = await this.getPagesInCategory('libraryfunc', '.*\\.');
+
+    return Promise.all(
+      libraryFunctionPageUrls.slice(0, 4).map(async (pageUrl) => {
+        const pageContent = await WikiScraper.limit(() => this.wikiApiClient.retrievePageContent(pageUrl));
+        return this.parseFunctionPage(pageContent);
+      })
+    );
+
+    return [];
+  }
+
   private async getPagesInCategory(category: string, filter = ''): Promise<Array<string>> {
     const response = await this.wikiApiClient.renderText(`<pagelist category="${category}" filter="${filter}"></pagelist>`);
 
