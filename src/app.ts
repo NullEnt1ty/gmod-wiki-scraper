@@ -26,6 +26,7 @@ function ensureOutputDirExists(): void {
 
 (async (): Promise<void> => {
   logger.info(`Starting scraping data from ${WikiApiClient.wikiUrl}`);
+  logger.info('This might take a few minutes so please be patient');
   const wikiApiClient = new WikiApiClient();
   const wikiScraper = new WikiScraper(wikiApiClient);
 
