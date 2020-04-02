@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "strictBindCallApply": true,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
+    "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "outDir": "dist",
+    "target": "ES2019",
+    "moduleResolution": "Node",
+    "module": "CommonJS"
+  },
+  "include": ["src/**/*.ts"]
+}

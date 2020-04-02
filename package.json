@@ -1,0 +1,25 @@
+{
+  "name": "gmod-wiki-scraper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/app.js",
+  "scripts": {
+    "start": "ts-node src/app.ts",
+    "build": "tsc"
+  },
+  "author": "Dominique Mattern <dominique@mattern.dev>",
+  "license": "MIT",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
+    "got": "^10.6.0",
+    "p-limit": "^2.2.2",
+    "pino": "^5.17.0",
+    "pino-pretty": "^3.6.1"
+  },
+  "devDependencies": {
+    "@types/cheerio": "^0.22.16",
+    "@types/pino": "^5.17.0",
+    "ts-node": "^8.6.2",
+    "typescript": "^3.8.3"
+  }
+}
