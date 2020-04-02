@@ -1,4 +1,5 @@
 import fs from 'fs';
+import path from 'path';
 import pino from 'pino';
 
 import { WikiScraper } from './wiki-scraper';
@@ -33,5 +34,5 @@ function ensureOutputDirExists(): void {
 
   logger.info('Writing data to disk');
   ensureOutputDirExists();
-  fs.writeFileSync('global-functions.json', JSON.stringify(globalFunctions, null, 2));
+  fs.writeFileSync(path.join(outputDir, 'global-functions.json'), JSON.stringify(globalFunctions, null, 2));
 })();
