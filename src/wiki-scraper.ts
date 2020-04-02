@@ -1,20 +1,20 @@
 import cheerio from 'cheerio';
-import got from 'got';
 import pLimit from 'p-limit';
 
-import { PagePreviewResponse, FunctionPage, FunctionArgument, FunctionReturnValue } from './types';
+import { FunctionPage, FunctionArgument, FunctionReturnValue } from './types';
+import { WikiApiClient } from './wiki-api-client';
 
 export class WikiScraper {
-  public static readonly wikiUrl = 'https://wiki.facepunch.com';
-  public static readonly wikiApiUrl = `${WikiScraper.wikiUrl}/api`;
   private static readonly limit = pLimit(4);
+
+  constructor(private wikiApiClient: WikiApiClient) { }
 
   public async getGlobalFunctions(): Promise<Array<FunctionPage>> {
     const globalFunctionPageUrls = await this.getPagesInCategory('Global');
 
     return Promise.all(
       globalFunctionPageUrls.map(async (pageUrl) => {
-        const pageContent = await WikiScraper.limit(() => this.retrievePageContent(pageUrl));
+        const pageContent = await WikiScraper.limit(() => this.wikiApiClient.retrievePageContent(pageUrl));
         return this.parseFunctionPage(pageContent);
       })
     );
@@ -25,15 +25,8 @@ export class WikiScraper {
     return [];
   }
 
-  private async renderText(text: string): Promise<PagePreviewResponse> {
-    const body = { text: text, realm: 'gmod' };
-    const response = await got(`${WikiScraper.wikiApiUrl}/page/preview`, { method: 'POST', json: body }).json<PagePreviewResponse>();
-
-    return response;
-  }
-
   private async getPagesInCategory(category: string, filter = ''): Promise<Array<string>> {
-    const response = await this.renderText(`<pagelist category="${category}" filter="${filter}"></pagelist>`);
+    const response = await this.wikiApiClient.renderText(`<pagelist category="${category}" filter="${filter}"></pagelist>`);
 
     if (!response.html || response.html === '') {
       throw new Error(`Could not get pages in category '${category}'`);
@@ -47,14 +40,6 @@ export class WikiScraper {
     });
 
     return pageUrls;
-  }
-
-  private async retrievePageContent(pageUrl: string): Promise<string> {
-    // Remove '/' or '/gmod/' prefixes
-    let pageUrlNormalized = pageUrl.startsWith('/') ? pageUrl.substring(1) : pageUrl;
-    pageUrlNormalized = pageUrlNormalized.startsWith('gmod/') ? pageUrlNormalized.substring(5) : pageUrlNormalized;
-
-    return got(`${WikiScraper.wikiUrl}/gmod/${pageUrlNormalized}?format=text`).text();
   }
 
   private parseFunctionPage(pageContent: string): FunctionPage {

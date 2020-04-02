@@ -2,6 +2,7 @@ import fs from 'fs';
 import pino from 'pino';
 
 import { WikiScraper } from './wiki-scraper';
+import { WikiApiClient } from './wiki-api-client';
 
 const outputDir = 'output';
 const logger = pino({
@@ -23,8 +24,9 @@ function ensureOutputDirExists(): void {
 }
 
 (async (): Promise<void> => {
-  logger.info(`Starting scraping data from ${WikiScraper.wikiUrl}`);
-  const wikiScraper = new WikiScraper();
+  logger.info(`Starting scraping data from ${WikiApiClient.wikiUrl}`);
+  const wikiApiClient = new WikiApiClient();
+  const wikiScraper = new WikiScraper(wikiApiClient);
 
   logger.info('Retrieving global functions');
   const globalFunctions = await wikiScraper.getGlobalFunctions();
