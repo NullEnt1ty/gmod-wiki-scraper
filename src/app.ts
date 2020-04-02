@@ -1,4 +1,4 @@
-import fs from 'fs'
+import fs from 'fs';
 import pino from 'pino';
 
 import { WikiScraper } from './wiki-scraper';
@@ -22,7 +22,7 @@ function ensureOutputDirExists(): void {
   }
 }
 
-(async () => {
+(async (): Promise<void> => {
   logger.info(`Starting scraping data from ${WikiScraper.wikiUrl}`);
   const wikiScraper = new WikiScraper();
 

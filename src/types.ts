@@ -7,7 +7,7 @@ export interface PagePreviewResponse {
 export interface FunctionArgument {
   name: string;
   type: string;
-  default?: any;
+  default?: unknown;
   description?: string;
 }
 

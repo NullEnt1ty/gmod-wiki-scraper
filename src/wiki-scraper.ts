@@ -32,7 +32,7 @@ export class WikiScraper {
     return response;
   }
 
-  private async getPagesInCategory(category: string, filter: string = ''): Promise<Array<string>> {
+  private async getPagesInCategory(category: string, filter = ''): Promise<Array<string>> {
     const response = await this.renderText(`<pagelist category="${category}" filter="${filter}"></pagelist>`);
 
     if (!response.html || response.html === '') {
