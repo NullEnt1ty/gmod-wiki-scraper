@@ -35,7 +35,7 @@ export class WikiScraper {
     const libraryFunctionPageUrls = await this.getPagesInCategory('libraryfunc', '.*\\.');
 
     return Promise.all(
-      libraryFunctionPageUrls.slice(0, 4).map(async (pageUrl) => {
+      libraryFunctionPageUrls.map(async (pageUrl) => {
         const pageContent = await WikiScraper.limit(() => this.wikiApiClient.retrievePageContent(pageUrl));
         return this.parseFunctionPage(pageContent);
       })
