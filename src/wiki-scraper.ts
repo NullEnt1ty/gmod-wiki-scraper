@@ -45,6 +45,7 @@ export class WikiScraper {
   private parseFunctionPage(pageContent: string): FunctionPage {
     const $ = cheerio.load(pageContent);
     const name = $('function').attr().name;
+    const parent = $('function').attr().parent;
     const description = this.trimMultiLineString($('function > description').text());
     const realmsRaw = this.trimMultiLineString($('function > realm').text());
     const realms = this.parseRealms(realmsRaw);
@@ -95,6 +96,7 @@ export class WikiScraper {
 
     const functionPage: FunctionPage = {
       name: name,
+      parent: parent,
       description: description,
       realms: realms,
     };

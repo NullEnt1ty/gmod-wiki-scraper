@@ -21,6 +21,7 @@ export interface FunctionReturnValue {
 
 export interface FunctionPage {
   name: string;
+  parent: string;
   description?: string;
   realms: Array<Realm>;
   arguments?: Array<FunctionArgument>;
