@@ -1,7 +1,7 @@
 import cheerio from 'cheerio';
 import pLimit from 'p-limit';
 
-import { FunctionPage, FunctionArgument, FunctionReturnValue } from './types';
+import { FunctionPage, FunctionArgument, FunctionReturnValue, Realm } from './types';
 import { WikiApiClient } from './wiki-api-client';
 
 export class WikiScraper {
@@ -46,7 +46,8 @@ export class WikiScraper {
     const $ = cheerio.load(pageContent);
     const name = $('function').attr().name;
     const description = this.trimMultiLineString($('function > description').text());
-    const realm = this.trimMultiLineString($('function > realm').text());
+    const realmsRaw = this.trimMultiLineString($('function > realm').text());
+    const realms = this.parseRealms(realmsRaw);
     const args: Array<FunctionArgument> = [];
     const returnValues: Array<FunctionReturnValue> = [];
 
@@ -95,7 +96,7 @@ export class WikiScraper {
     const functionPage: FunctionPage = {
       name: name,
       description: description,
-      realm: realm,
+      realms: realms,
     };
 
     if (args.length > 0) {
@@ -107,6 +108,30 @@ export class WikiScraper {
     }
 
     return functionPage;
+  }
+
+  private parseRealms(realmsRaw: string): Array<Realm> {
+    const realms = new Set<Realm>();
+    const realmsRawLower = realmsRaw.toLowerCase();
+
+    if (realmsRawLower.includes('client')) {
+      realms.add('client');
+    }
+
+    if (realmsRawLower.includes('menu')) {
+      realms.add('menu');
+    }
+
+    if (realmsRawLower.includes('server')) {
+      realms.add('server');
+    }
+
+    if (realmsRawLower.includes('shared')) {
+      realms.add('client');
+      realms.add('server');
+    }
+
+    return Array.from(realms);
   }
 
   private trimMultiLineString(str: string): string {

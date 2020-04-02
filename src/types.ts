@@ -1,3 +1,5 @@
+export type Realm = 'client' | 'menu' | 'server';
+
 export interface PagePreviewResponse {
   status: string;
   html: string;
@@ -20,7 +22,7 @@ export interface FunctionReturnValue {
 export interface FunctionPage {
   name: string;
   description?: string;
-  realm: string;
+  realms: Array<Realm>;
   arguments?: Array<FunctionArgument>;
   returnValues?: Array<FunctionReturnValue>;
 }
