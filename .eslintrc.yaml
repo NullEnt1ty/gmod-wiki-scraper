@@ -9,3 +9,7 @@ rules:
   semi: "off"
   "@typescript-eslint/semi": "error"
   "@typescript-eslint/member-ordering": "error"
+  quotes: "off"
+  "@typescript-eslint/quotes":
+    - "error"
+    - "single"
