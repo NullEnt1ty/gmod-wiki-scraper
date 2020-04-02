@@ -21,8 +21,14 @@ export class WikiScraper {
   }
 
   public async getClassFunctions(): Promise<Array<FunctionPage>> {
-    // <pagelist category="classfunc" filter=".*:"></pagelist>
-    return [];
+    const classFunctionPageUrls = await this.getPagesInCategory('classfunc', '.*:');
+
+    return Promise.all(
+      classFunctionPageUrls.map(async (pageUrl) => {
+        const pageContent = await WikiScraper.limit(() => this.wikiApiClient.retrievePageContent(pageUrl));
+        return this.parseFunctionPage(pageContent);
+      })
+    );
   }
 
   private async getPagesInCategory(category: string, filter = ''): Promise<Array<string>> {

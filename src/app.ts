@@ -33,7 +33,11 @@ function ensureOutputDirExists(): void {
   logger.info('Retrieving global functions');
   const globalFunctions = await wikiScraper.getGlobalFunctions();
 
+  logger.info('Retrieving class functions');
+  const classFunctions = await wikiScraper.getClassFunctions();
+
   logger.info('Writing data to disk');
   ensureOutputDirExists();
   fs.writeFileSync(path.join(outputDir, 'global-functions.json'), JSON.stringify(globalFunctions, null, 2));
+  fs.writeFileSync(path.join(outputDir, 'class-functions.json'), JSON.stringify(classFunctions, null, 2));
 })();
