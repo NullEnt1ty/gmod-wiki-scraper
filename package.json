@@ -5,7 +5,8 @@
   "main": "dist/app.js",
   "scripts": {
     "start": "ts-node src/app.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "lint": "eslint \"src/**/*.ts\""
   },
   "author": "Dominique Mattern <dominique@mattern.dev>",
   "license": "MIT",
@@ -19,6 +20,9 @@
   "devDependencies": {
     "@types/cheerio": "^0.22.16",
     "@types/pino": "^5.17.0",
+    "@typescript-eslint/eslint-plugin": "^2.26.0",
+    "@typescript-eslint/parser": "^2.26.0",
+    "eslint": "^6.8.0",
     "ts-node": "^8.6.2",
     "typescript": "^3.8.3"
   }
