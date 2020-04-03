@@ -40,8 +40,6 @@ export class WikiScraper {
         return this.parseFunctionPage(pageContent);
       })
     );
-
-    return [];
   }
 
   private async getPagesInCategory(category: string, filter = ''): Promise<Array<string>> {
