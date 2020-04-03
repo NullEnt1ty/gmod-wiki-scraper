@@ -39,9 +39,13 @@ function ensureOutputDirExists(): void {
   logger.info('Retrieving library functions');
   const libraryFunctions = await wikiScraper.getLibraryFunctions();
 
+  logger.info('Retrieving hook functions');
+  const hookFunctions = await wikiScraper.getHookFunctions();
+
   logger.info('Writing data to disk');
   ensureOutputDirExists();
   fs.writeFileSync(path.join(outputDir, 'global-functions.json'), JSON.stringify(globalFunctions, null, 2));
   fs.writeFileSync(path.join(outputDir, 'class-functions.json'), JSON.stringify(classFunctions, null, 2));
   fs.writeFileSync(path.join(outputDir, 'library-functions.json'), JSON.stringify(libraryFunctions, null, 2));
+  fs.writeFileSync(path.join(outputDir, 'hook-functions.json'), JSON.stringify(hookFunctions, null, 2));
 })();

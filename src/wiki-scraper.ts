@@ -42,6 +42,17 @@ export class WikiScraper {
     );
   }
 
+  public async getHookFunctions(): Promise<Array<FunctionPage>> {
+    const hookFunctionPageUrls = await this.getPagesInCategory('hook', '.*:');
+
+    return Promise.all(
+      hookFunctionPageUrls.map(async (pageUrl) => {
+        const pageContent = await WikiScraper.limit(() => this.wikiApiClient.retrievePageContent(pageUrl));
+        return this.parseFunctionPage(pageContent);
+      })
+    );
+  }
+
   private async getPagesInCategory(category: string, filter = ''): Promise<Array<string>> {
     const response = await this.wikiApiClient.renderText(`<pagelist category="${category}" filter="${filter}"></pagelist>`);
 
