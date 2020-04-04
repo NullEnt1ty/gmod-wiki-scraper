@@ -13,3 +13,7 @@ rules:
   "@typescript-eslint/quotes":
     - "error"
     - "single"
+  indent: "off"
+  "@typescript-eslint/indent":
+    - "error"
+    - 2
