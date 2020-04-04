@@ -5,7 +5,7 @@ import { Function, FunctionArgument, FunctionReturnValue, Realm, Class, Panel } 
 import { WikiApiClient } from './wiki-api-client';
 
 export class WikiScraper {
-  private static readonly limit = pLimit(4);
+  private static readonly limit = pLimit(8);
 
   constructor(private wikiApiClient: WikiApiClient) { }
 
