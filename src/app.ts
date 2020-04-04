@@ -1,16 +1,11 @@
 import fs from 'fs';
 import path from 'path';
-import pino from 'pino';
 
 import { WikiScraper } from './wiki-scraper';
 import { WikiApiClient } from './wiki-api-client';
+import logger from './logger';
 
 const outputDir = 'output';
-const logger = pino({
-  prettyPrint: true,
-  base: null,
-  timestamp: pino.stdTimeFunctions.isoTime,
-});
 
 function ensureOutputDirExists(): void {
   try {
