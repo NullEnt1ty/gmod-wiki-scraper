@@ -163,9 +163,12 @@ export class WikiScraper {
     const _function: Function = {
       name: name,
       parent: parent,
-      description: description,
       realms: realms,
     };
+
+    if (description !== '') {
+      _function.description = description;
+    }
 
     if (args.length > 0) {
       _function.arguments = args;
