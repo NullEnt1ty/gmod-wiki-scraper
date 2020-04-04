@@ -46,7 +46,7 @@ export interface FunctionReturnValue {
   description?: string;
 }
 
-export interface FunctionPage {
+export interface Function {
   name: string;
   parent: string;
   description?: string;

@@ -1,7 +1,7 @@
 import cheerio from 'cheerio';
 import pLimit from 'p-limit';
 
-import { FunctionPage, FunctionArgument, FunctionReturnValue, Realm } from './types';
+import { Function, FunctionArgument, FunctionReturnValue, Realm } from './types';
 import { WikiApiClient } from './wiki-api-client';
 
 export class WikiScraper {
@@ -9,7 +9,7 @@ export class WikiScraper {
 
   constructor(private wikiApiClient: WikiApiClient) { }
 
-  public async getGlobalFunctions(): Promise<Array<FunctionPage>> {
+  public async getGlobalFunctions(): Promise<Array<Function>> {
     const globalFunctionPageUrls = await this.getPagesInCategory('Global');
 
     return Promise.all(
@@ -20,7 +20,7 @@ export class WikiScraper {
     );
   }
 
-  public async getClassFunctions(): Promise<Array<FunctionPage>> {
+  public async getClassFunctions(): Promise<Array<Function>> {
     const classFunctionPageUrls = await this.getPagesInCategory('classfunc', '.*:');
 
     return Promise.all(
@@ -31,7 +31,7 @@ export class WikiScraper {
     );
   }
 
-  public async getLibraryFunctions(): Promise<Array<FunctionPage>> {
+  public async getLibraryFunctions(): Promise<Array<Function>> {
     const libraryFunctionPageUrls = await this.getPagesInCategory('libraryfunc', '.*\\.');
 
     return Promise.all(
@@ -42,7 +42,7 @@ export class WikiScraper {
     );
   }
 
-  public async getHookFunctions(): Promise<Array<FunctionPage>> {
+  public async getHookFunctions(): Promise<Array<Function>> {
     const hookFunctionPageUrls = await this.getPagesInCategory('hook', '.*:');
 
     return Promise.all(
@@ -70,7 +70,7 @@ export class WikiScraper {
     return pageUrls;
   }
 
-  private parseFunctionPage(pageContent: string): FunctionPage {
+  private parseFunctionPage(pageContent: string): Function {
     const $ = cheerio.load(pageContent);
     const name = $('function').attr().name;
     const parent = $('function').attr().parent;
@@ -122,7 +122,7 @@ export class WikiScraper {
         returnValues.push(returnValue);
       });
 
-    const functionPage: FunctionPage = {
+    const _function: Function = {
       name: name,
       parent: parent,
       description: description,
@@ -130,14 +130,14 @@ export class WikiScraper {
     };
 
     if (args.length > 0) {
-      functionPage.arguments = args;
+      _function.arguments = args;
     }
 
     if (returnValues.length > 0) {
-      functionPage.returnValues = returnValues;
+      _function.returnValues = returnValues;
     }
 
-    return functionPage;
+    return _function;
   }
 
   private parseRealms(realmsRaw: string): Array<Realm> {
