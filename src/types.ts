@@ -33,6 +33,18 @@ export interface WikiPage {
   content: string;
 }
 
+export interface Class {
+  name: string;
+  parent?: string;
+  description?: string;
+  functions?: Array<Function>;
+}
+
+export interface Panel {
+  parent: string;
+  description?: string;
+}
+
 export interface FunctionArgument {
   name: string;
   type: string;
