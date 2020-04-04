@@ -14,8 +14,8 @@ export class WikiScraper {
 
     return Promise.all(
       globalFunctionPageUrls.map(async (pageUrl) => {
-        const pageContent = await WikiScraper.limit(() => this.wikiApiClient.retrievePageContent(pageUrl));
-        return this.parseFunctionPage(pageContent);
+        const page = await WikiScraper.limit(() => this.wikiApiClient.retrievePage(pageUrl));
+        return this.parseFunctionPage(page.content);
       })
     );
   }
@@ -25,8 +25,8 @@ export class WikiScraper {
 
     return Promise.all(
       classFunctionPageUrls.map(async (pageUrl) => {
-        const pageContent = await WikiScraper.limit(() => this.wikiApiClient.retrievePageContent(pageUrl));
-        return this.parseFunctionPage(pageContent);
+        const page = await WikiScraper.limit(() => this.wikiApiClient.retrievePage(pageUrl));
+        return this.parseFunctionPage(page.content);
       })
     );
   }
@@ -36,8 +36,8 @@ export class WikiScraper {
 
     return Promise.all(
       libraryFunctionPageUrls.map(async (pageUrl) => {
-        const pageContent = await WikiScraper.limit(() => this.wikiApiClient.retrievePageContent(pageUrl));
-        return this.parseFunctionPage(pageContent);
+        const page = await WikiScraper.limit(() => this.wikiApiClient.retrievePage(pageUrl));
+        return this.parseFunctionPage(page.content);
       })
     );
   }
@@ -47,8 +47,8 @@ export class WikiScraper {
 
     return Promise.all(
       hookFunctionPageUrls.map(async (pageUrl) => {
-        const pageContent = await WikiScraper.limit(() => this.wikiApiClient.retrievePageContent(pageUrl));
-        return this.parseFunctionPage(pageContent);
+        const page = await WikiScraper.limit(() => this.wikiApiClient.retrievePage(pageUrl));
+        return this.parseFunctionPage(page.content);
       })
     );
   }
