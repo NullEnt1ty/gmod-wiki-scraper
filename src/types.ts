@@ -66,3 +66,8 @@ export interface Function {
   arguments?: Array<FunctionArgument>;
   returnValues?: Array<FunctionReturnValue>;
 }
+
+export interface Type {
+  name: string;
+  description?: string;
+}

@@ -1,7 +1,7 @@
 import cheerio from 'cheerio';
 import pLimit from 'p-limit';
 
-import { Function, FunctionArgument, FunctionReturnValue, Realm, Class, Panel } from './types';
+import { Function, FunctionArgument, FunctionReturnValue, Realm, Class, Panel, WikiPage, Type } from './types';
 import { WikiApiClient } from './wiki-api-client';
 
 export class WikiScraper {
@@ -59,36 +59,7 @@ export class WikiScraper {
       return WikiScraper.limit(() => this.wikiApiClient.retrievePage(pageUrl));
     }));
 
-    const panelClasses = new Map<string, Class>();
-
-    panelPages.forEach((panelPage) => {
-      // Examples:
-      // ContentIcon
-      // ContentIcon:GetColor
-      const className = panelPage.title.includes(':')
-        ? panelPage.title.split(':')[0]
-        : panelPage.title;
-
-      const panelClass: Class = panelClasses.get(className) ?? { name: className };
-
-      if (this.isPanelPage(panelPage.content)) {
-        const panel = this.parsePanelPage(panelPage.content);
-        panelClass.parent = panel.parent;
-
-        if (panel.description) {
-          panelClass.description = panel.description;
-        }
-      } else {
-        const _function = this.parseFunctionPage(panelPage.content);
-
-        panelClass.functions = panelClass.functions ?? [];
-        panelClass.functions.push(_function);
-      }
-
-      panelClasses.set(className, panelClass);
-    });
-
-    return Array.from(panelClasses.values());
+    return this.buildClasses(panelPages);
   }
 
   private async getPagesInCategory(category: string, filter = ''): Promise<Array<string>> {
@@ -106,6 +77,47 @@ export class WikiScraper {
     });
 
     return pageUrls;
+  }
+
+  private buildClasses(wikiPages: Array<WikiPage>): Array<Class> {
+    const classes = new Map<string, Class>();
+
+    wikiPages.forEach((wikiPage) => {
+      // Examples:
+      // ContentIcon
+      // ContentIcon:GetColor
+      const className = wikiPage.title.includes(':')
+        ? wikiPage.title.split(':')[0]
+        : wikiPage.title;
+
+      const _class: Class = classes.get(className) ?? { name: className };
+
+      if (this.isPanelPage(wikiPage.content)) {
+        const panel = this.parsePanelPage(wikiPage.content);
+        _class.parent = panel.parent;
+
+        if (panel.description) {
+          _class.description = panel.description;
+        }
+      } else if (this.isTypePage(wikiPage.content)) {
+        const type = this.parseTypePage(wikiPage.content);
+
+        if (type.description) {
+          _class.description = type.description;
+        }
+      } else if (this.isFunctionPage(wikiPage.content)) {
+        const _function = this.parseFunctionPage(wikiPage.content);
+
+        _class.functions = _class.functions ?? [];
+        _class.functions.push(_function);
+      } else {
+        throw new Error(`Unknown page type encountered on page '${wikiPage.title}'`);
+      }
+
+      classes.set(className, _class);
+    });
+
+    return Array.from(classes.values());
   }
 
   private parseFunctionPage(pageContent: string): Function {
@@ -197,6 +209,22 @@ export class WikiScraper {
     return panel;
   }
 
+  private parseTypePage(pageContent: string): Type {
+    const $ = cheerio.load(pageContent);
+    const name = $('type').attr().name;
+    const description = this.trimMultiLineString($('type > summary').text());
+
+    const type: Type = {
+      name: name,
+    };
+
+    if (description !== '') {
+      type.description = description;
+    }
+
+    return type;
+  }
+
   private parseRealms(realmsRaw: string): Array<Realm> {
     const realms = new Set<Realm>();
     const realmsRawLower = realmsRaw.toLowerCase();
@@ -225,6 +253,18 @@ export class WikiScraper {
     const $ = cheerio.load(pageContent);
 
     return $('panel').length > 0;
+  }
+
+  private isFunctionPage(pageContent: string): boolean {
+    const $ = cheerio.load(pageContent);
+
+    return $('function').length > 0;
+  }
+
+  private isTypePage(pageContent: string): boolean {
+    const $ = cheerio.load(pageContent);
+
+    return $('type').length > 0;
   }
 
   private trimMultiLineString(str: string): string {
