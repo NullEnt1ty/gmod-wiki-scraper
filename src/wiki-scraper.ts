@@ -1,4 +1,5 @@
 import cheerio from 'cheerio';
+import { SingleBar, Presets } from 'cli-progress';
 import pLimit from 'p-limit';
 
 import { Function, FunctionArgument, FunctionReturnValue, Realm, Class, Panel, WikiPage, Type } from './types';
@@ -7,14 +8,23 @@ import logger from './logger';
 
 export class WikiScraper {
   private static readonly limit = pLimit(8);
+  private readonly progressBar = new SingleBar({}, Presets.shades_classic);
 
   constructor(private wikiApiClient: WikiApiClient) { }
 
   public async getGlobalFunctions(): Promise<Array<Function>> {
     const globalFunctionPageUrls = await this.getPagesInCategory('Global');
-    const globalFunctionPages = await Promise.all(globalFunctionPageUrls.map((pageUrl) => {
-      return WikiScraper.limit(() => this.wikiApiClient.retrievePage(pageUrl));
+    this.progressBar.start(globalFunctionPageUrls.length, 0);
+
+    const globalFunctionPages = await Promise.all(globalFunctionPageUrls.map(async (pageUrl) => {
+      const page = await WikiScraper.limit(() => this.wikiApiClient.retrievePage(pageUrl));
+      this.progressBar.increment();
+
+      return page;
     }));
+
+    this.progressBar.stop();
+
     const globalFunctions: Array<Function> = [];
 
     globalFunctionPages.forEach((globalFunctionPage) => {
@@ -31,36 +41,64 @@ export class WikiScraper {
 
   public async getClasses(): Promise<Array<Class>> {
     const classPageUrls = await this.getPagesInCategory('classfunc');
-    const classPages = await Promise.all(classPageUrls.map((pageUrl) => {
-      return WikiScraper.limit(() => this.wikiApiClient.retrievePage(pageUrl));
+    this.progressBar.start(classPageUrls.length, 0);
+
+    const classPages = await Promise.all(classPageUrls.map(async (pageUrl) => {
+      const page = await WikiScraper.limit(() => this.wikiApiClient.retrievePage(pageUrl));
+      this.progressBar.increment();
+
+      return page;
     }));
+
+    this.progressBar.stop();
 
     return this.buildClasses(classPages);
   }
 
   public async getLibraries(): Promise<Array<Class>> {
     const libraryPageUrls = await this.getPagesInCategory('libraryfunc');
+    this.progressBar.start(libraryPageUrls.length, 0);
+
     const libraryPages = await Promise.all(libraryPageUrls.map(async (pageUrl) => {
-      return WikiScraper.limit(() => this.wikiApiClient.retrievePage(pageUrl));
+      const page = await WikiScraper.limit(() => this.wikiApiClient.retrievePage(pageUrl));
+      this.progressBar.increment();
+
+      return page;
     }));
+
+    this.progressBar.stop();
 
     return this.buildClasses(libraryPages);
   }
 
   public async getHooks(): Promise<Array<Class>> {
     const hookPageUrls = await this.getPagesInCategory('hook', '.*:');
+    this.progressBar.start(hookPageUrls.length, 0);
+
     const hookPages = await Promise.all(hookPageUrls.map(async (pageUrl) => {
-      return WikiScraper.limit(() => this.wikiApiClient.retrievePage(pageUrl));
+      const page = await WikiScraper.limit(() => this.wikiApiClient.retrievePage(pageUrl));
+      this.progressBar.increment();
+
+      return page;
     }));
+
+    this.progressBar.stop();
 
     return this.buildClasses(hookPages);
   }
 
   public async getPanels(): Promise<Array<Class>> {
     const panelPageUrls = await this.getPagesInCategory('panelfunc');
-    const panelPages = await Promise.all(panelPageUrls.map((pageUrl) => {
-      return WikiScraper.limit(() => this.wikiApiClient.retrievePage(pageUrl));
+    this.progressBar.start(panelPageUrls.length, 0);
+
+    const panelPages = await Promise.all(panelPageUrls.map(async (pageUrl) => {
+      const page = await WikiScraper.limit(() => this.wikiApiClient.retrievePage(pageUrl));
+      this.progressBar.increment();
+
+      return page;
     }));
+
+    this.progressBar.stop();
 
     return this.buildClasses(panelPages);
   }
