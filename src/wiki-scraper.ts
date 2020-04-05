@@ -20,37 +20,31 @@ export class WikiScraper {
     );
   }
 
-  public async getClassFunctions(): Promise<Array<Function>> {
-    const classFunctionPageUrls = await this.getPagesInCategory('classfunc', '.*:');
+  public async getClasses(): Promise<Array<Class>> {
+    const classPageUrls = await this.getPagesInCategory('classfunc');
+    const classPages = await Promise.all(classPageUrls.map((pageUrl) => {
+      return WikiScraper.limit(() => this.wikiApiClient.retrievePage(pageUrl));
+    }));
 
-    return Promise.all(
-      classFunctionPageUrls.map(async (pageUrl) => {
-        const page = await WikiScraper.limit(() => this.wikiApiClient.retrievePage(pageUrl));
-        return this.parseFunctionPage(page.content);
-      })
-    );
+    return this.buildClasses(classPages);
   }
 
-  public async getLibraryFunctions(): Promise<Array<Function>> {
-    const libraryFunctionPageUrls = await this.getPagesInCategory('libraryfunc', '.*\\.');
+  public async getLibraries(): Promise<Array<Class>> {
+    const libraryPageUrls = await this.getPagesInCategory('libraryfunc', '.*\\.');
+    const libraryPages = await Promise.all(libraryPageUrls.map(async (pageUrl) => {
+      return WikiScraper.limit(() => this.wikiApiClient.retrievePage(pageUrl));
+    }));
 
-    return Promise.all(
-      libraryFunctionPageUrls.map(async (pageUrl) => {
-        const page = await WikiScraper.limit(() => this.wikiApiClient.retrievePage(pageUrl));
-        return this.parseFunctionPage(page.content);
-      })
-    );
+    return this.buildClasses(libraryPages);
   }
 
-  public async getHookFunctions(): Promise<Array<Function>> {
-    const hookFunctionPageUrls = await this.getPagesInCategory('hook', '.*:');
+  public async getHooks(): Promise<Array<Class>> {
+    const hookPageUrls = await this.getPagesInCategory('hook', '.*:');
+    const hookPages = await Promise.all(hookPageUrls.map(async (pageUrl) => {
+      return WikiScraper.limit(() => this.wikiApiClient.retrievePage(pageUrl));
+    }));
 
-    return Promise.all(
-      hookFunctionPageUrls.map(async (pageUrl) => {
-        const page = await WikiScraper.limit(() => this.wikiApiClient.retrievePage(pageUrl));
-        return this.parseFunctionPage(page.content);
-      })
-    );
+    return this.buildClasses(hookPages);
   }
 
   public async getPanels(): Promise<Array<Class>> {

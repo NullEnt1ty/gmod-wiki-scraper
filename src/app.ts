@@ -28,14 +28,14 @@ function ensureOutputDirExists(): void {
   logger.info('Retrieving global functions');
   const globalFunctions = await wikiScraper.getGlobalFunctions();
 
-  logger.info('Retrieving class functions');
-  const classFunctions = await wikiScraper.getClassFunctions();
+  logger.info('Retrieving classes');
+  const classes = await wikiScraper.getClasses();
 
-  logger.info('Retrieving library functions');
-  const libraryFunctions = await wikiScraper.getLibraryFunctions();
+  logger.info('Retrieving libraries');
+  const libraries = await wikiScraper.getLibraries();
 
-  logger.info('Retrieving hook functions');
-  const hookFunctions = await wikiScraper.getHookFunctions();
+  logger.info('Retrieving hooks');
+  const hooks = await wikiScraper.getHooks();
 
   logger.info('Retrieving panels');
   const panels = await wikiScraper.getPanels();
@@ -43,8 +43,8 @@ function ensureOutputDirExists(): void {
   logger.info('Writing data to disk');
   ensureOutputDirExists();
   fs.writeFileSync(path.join(outputDir, 'global-functions.json'), JSON.stringify(globalFunctions, null, 2));
-  fs.writeFileSync(path.join(outputDir, 'class-functions.json'), JSON.stringify(classFunctions, null, 2));
-  fs.writeFileSync(path.join(outputDir, 'library-functions.json'), JSON.stringify(libraryFunctions, null, 2));
-  fs.writeFileSync(path.join(outputDir, 'hook-functions.json'), JSON.stringify(hookFunctions, null, 2));
+  fs.writeFileSync(path.join(outputDir, 'classes.json'), JSON.stringify(classes, null, 2));
+  fs.writeFileSync(path.join(outputDir, 'libraries.json'), JSON.stringify(libraries, null, 2));
+  fs.writeFileSync(path.join(outputDir, 'hooks.json'), JSON.stringify(hooks, null, 2));
   fs.writeFileSync(path.join(outputDir, 'panels.json'), JSON.stringify(panels, null, 2));
 })();
