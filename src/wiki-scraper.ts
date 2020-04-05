@@ -3,6 +3,7 @@ import pLimit from 'p-limit';
 
 import { Function, FunctionArgument, FunctionReturnValue, Realm, Class, Panel, WikiPage, Type } from './types';
 import { WikiApiClient } from './wiki-api-client';
+import logger from './logger';
 
 export class WikiScraper {
   private static readonly limit = pLimit(8);
@@ -11,13 +12,21 @@ export class WikiScraper {
 
   public async getGlobalFunctions(): Promise<Array<Function>> {
     const globalFunctionPageUrls = await this.getPagesInCategory('Global');
+    const globalFunctionPages = await Promise.all(globalFunctionPageUrls.map((pageUrl) => {
+      return WikiScraper.limit(() => this.wikiApiClient.retrievePage(pageUrl));
+    }));
+    const globalFunctions: Array<Function> = [];
 
-    return Promise.all(
-      globalFunctionPageUrls.map(async (pageUrl) => {
-        const page = await WikiScraper.limit(() => this.wikiApiClient.retrievePage(pageUrl));
-        return this.parseFunctionPage(page.content);
-      })
-    );
+    globalFunctionPages.forEach((globalFunctionPage) => {
+      if (this.isFunctionPage(globalFunctionPage.content)) {
+        const globalFunction = this.parseFunctionPage(globalFunctionPage.content);
+        globalFunctions.push(globalFunction);
+      } else {
+        logger.warn(`Unknown page type encountered on page '${globalFunctionPage.title}'`);
+      }
+    });
+
+    return globalFunctions;
   }
 
   public async getClasses(): Promise<Array<Class>> {
@@ -109,7 +118,7 @@ export class WikiScraper {
         _class.functions = _class.functions ?? [];
         _class.functions.push(_function);
       } else {
-        throw new Error(`Unknown page type encountered on page '${wikiPage.title}'`);
+        logger.warn(`Unknown page type encountered on page '${wikiPage.title}'`);
       }
 
       classes.set(className, _class);
