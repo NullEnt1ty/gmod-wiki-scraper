@@ -30,7 +30,7 @@ export class WikiScraper {
   }
 
   public async getLibraries(): Promise<Array<Class>> {
-    const libraryPageUrls = await this.getPagesInCategory('libraryfunc', '.*\\.');
+    const libraryPageUrls = await this.getPagesInCategory('libraryfunc');
     const libraryPages = await Promise.all(libraryPageUrls.map(async (pageUrl) => {
       return WikiScraper.limit(() => this.wikiApiClient.retrievePage(pageUrl));
     }));
@@ -80,9 +80,13 @@ export class WikiScraper {
       // Examples:
       // ContentIcon
       // ContentIcon:GetColor
+      // achievements
+      // achievements.BalloonPopped
       const className = wikiPage.title.includes(':')
         ? wikiPage.title.split(':')[0]
-        : wikiPage.title;
+        : wikiPage.title.includes('.')
+          ? wikiPage.title.split('.')[0]
+          : wikiPage.title;
 
       const _class: Class = classes.get(className) ?? { name: className };
 
