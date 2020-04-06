@@ -25,25 +25,25 @@ function ensureOutputDirExists(): void {
   const wikiApiClient = new WikiApiClient();
   const wikiScraper = new WikiScraper(wikiApiClient);
 
-  logger.info('Retrieving global functions');
+  logger.info('Retrieving global functions (1 / 7)');
   const globalFunctions = await wikiScraper.getGlobalFunctions();
 
-  logger.info('Retrieving classes');
+  logger.info('Retrieving classes (2 / 7)');
   const classes = await wikiScraper.getClasses();
 
-  logger.info('Retrieving libraries');
+  logger.info('Retrieving libraries (3 / 7)');
   const libraries = await wikiScraper.getLibraries();
 
-  logger.info('Retrieving hooks');
+  logger.info('Retrieving hooks (4 / 7)');
   const hooks = await wikiScraper.getHooks();
 
-  logger.info('Retrieving panels');
+  logger.info('Retrieving panels (5 / 7)');
   const panels = await wikiScraper.getPanels();
 
-  logger.info('Retrieving enums');
+  logger.info('Retrieving enums (6 / 7)');
   const enums = await wikiScraper.getEnums();
 
-  logger.info('Retrieving structs');
+  logger.info('Retrieving structs (7 / 7)');
   const structs = await wikiScraper.getStructs();
 
   logger.info('Writing data to disk');
