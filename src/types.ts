@@ -72,7 +72,7 @@ export interface Type {
   description?: string;
 }
 
-export interface EnumItem {
+export interface EnumField {
   name: string;
   description?: string;
   value: number;
@@ -81,7 +81,7 @@ export interface EnumItem {
 export interface Enum {
   name?: string;
   description?: string;
-  items: Array<EnumItem>;
+  fields: Array<EnumField>;
   realms: Array<Realm>;
 }
 

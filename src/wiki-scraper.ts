@@ -12,7 +12,7 @@ import {
   WikiPage,
   Type,
   Enum,
-  EnumItem,
+  EnumField,
   StructField,
   Struct,
 } from './types';
@@ -346,7 +346,7 @@ export class WikiScraper {
     const realmsRaw = this.trimMultiLineString($('enum > realm').text());
     const realms = this.parseRealms(realmsRaw);
     const description = $('enum > description').html();
-    const enumItems: Array<EnumItem> = [];
+    const enumFields: Array<EnumField> = [];
 
     $('enum > items')
       .children()
@@ -355,20 +355,20 @@ export class WikiScraper {
         const value = element.attribs.value;
         const description = $(element).html();
 
-        const enumItem: EnumItem = {
+        const enumField: EnumField = {
           name: name,
           value: Number(value),
         };
 
         if (description && description !== '') {
-          enumItem.description = this.trimMultiLineString(description);
+          enumField.description = this.trimMultiLineString(description);
         }
 
-        enumItems.push(enumItem);
+        enumFields.push(enumField);
       });
 
     const _enum: Enum = {
-      items: enumItems,
+      fields: enumFields,
       realms: realms,
     };
 
