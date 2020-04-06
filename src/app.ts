@@ -43,6 +43,9 @@ function ensureOutputDirExists(): void {
   logger.info('Retrieving enums');
   const enums = await wikiScraper.getEnums();
 
+  logger.info('Retrieving structs');
+  const structs = await wikiScraper.getStructs();
+
   logger.info('Writing data to disk');
   ensureOutputDirExists();
   fs.writeFileSync(path.join(outputDir, 'global-functions.json'), JSON.stringify(globalFunctions, null, 2));
@@ -51,4 +54,5 @@ function ensureOutputDirExists(): void {
   fs.writeFileSync(path.join(outputDir, 'hooks.json'), JSON.stringify(hooks, null, 2));
   fs.writeFileSync(path.join(outputDir, 'panels.json'), JSON.stringify(panels, null, 2));
   fs.writeFileSync(path.join(outputDir, 'enums.json'), JSON.stringify(enums, null, 2));
+  fs.writeFileSync(path.join(outputDir, 'structs.json'), JSON.stringify(structs, null, 2));
 })();

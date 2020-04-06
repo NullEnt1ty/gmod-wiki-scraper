@@ -84,3 +84,17 @@ export interface Enum {
   items: Array<EnumItem>;
   realms: Array<Realm>;
 }
+
+export interface StructField {
+  name: string;
+  type: string;
+  default?: string;
+  description?: string;
+}
+
+export interface Struct {
+  name?: string;
+  description?: string;
+  fields: Array<StructField>;
+  realms: Array<Realm>;
+}

@@ -2,7 +2,20 @@ import cheerio from 'cheerio';
 import { SingleBar, Presets } from 'cli-progress';
 import pLimit from 'p-limit';
 
-import { Function, FunctionArgument, FunctionReturnValue, Realm, Class, Panel, WikiPage, Type, Enum, EnumItem } from './types';
+import {
+  Function,
+  FunctionArgument,
+  FunctionReturnValue,
+  Realm,
+  Class,
+  Panel,
+  WikiPage,
+  Type,
+  Enum,
+  EnumItem,
+  StructField,
+  Struct,
+} from './types';
 import { WikiApiClient } from './wiki-api-client';
 import logger from './logger';
 
@@ -130,6 +143,35 @@ export class WikiScraper {
     });
 
     return enums;
+  }
+
+  public async getStructs(): Promise<Array<Struct>> {
+    const structPageUrls = await this.getPagesInCategory('struct');
+    this.progressBar.start(structPageUrls.length, 0);
+
+    const structPages = await Promise.all(structPageUrls.map(async (pageUrl) => {
+      const page = await WikiScraper.limit(() => this.wikiApiClient.retrievePage(pageUrl));
+      this.progressBar.increment();
+
+      return page;
+    }));
+
+    this.progressBar.stop();
+
+    const structs: Array<Struct> = [];
+
+    structPages.forEach((structPage) => {
+      if (this.isStructPage(structPage.content)) {
+        const struct = this.parseStructPage(structPage.content);
+        struct.name = structPage.title;
+
+        structs.push(struct);
+      } else {
+        logger.warn(`Unknown page type encountered on page '${structPage.title}'`);
+      }
+    });
+
+    return structs;
   }
 
   private async getPagesInCategory(category: string, filter = ''): Promise<Array<string>> {
@@ -337,6 +379,48 @@ export class WikiScraper {
     return _enum;
   }
 
+  private parseStructPage(pageContent: string): Struct {
+    const $ = this.parseContent(pageContent);
+    const realmsRaw = this.trimMultiLineString($('structure > realm').text());
+    const realms = this.parseRealms(realmsRaw);
+    const description = $('structure > description').html();
+    const structFields: Array<StructField> = [];
+
+    $('structure > fields')
+      .children()
+      .each((i, element) => {
+        const name = element.attribs.name;
+        const type = element.attribs.type;
+        const description = $(element).html();
+
+        const structField: StructField = {
+          name: name,
+          type: type,
+        };
+
+        if (element.attribs.default) {
+          structField.default = element.attribs.default;
+        }
+
+        if (description && description !== '') {
+          structField.description = this.trimMultiLineString(description);
+        }
+
+        structFields.push(structField);
+      });
+
+    const struct: Struct = {
+      fields: structFields,
+      realms: realms,
+    };
+
+    if (description && description !== '') {
+      struct.description = this.trimMultiLineString(description);
+    }
+
+    return struct;
+  }
+
   private parseRealms(realmsRaw: string): Array<Realm> {
     const realms = new Set<Realm>();
     const realmsRawLower = realmsRaw.toLowerCase();
@@ -387,6 +471,12 @@ export class WikiScraper {
     const $ = this.parseContent(pageContent);
 
     return $('enum').length > 0;
+  }
+
+  private isStructPage(pageContent: string): boolean {
+    const $ = this.parseContent(pageContent);
+
+    return $('structure').length > 0;
   }
 
   private trimMultiLineString(str: string): string {
