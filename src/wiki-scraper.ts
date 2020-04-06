@@ -140,7 +140,7 @@ export class WikiScraper {
     }
 
     const pageUrls: Array<string> = [];
-    const $ = cheerio.load(response.html);
+    const $ = this.parseContent(response.html);
 
     $('ul > li > a').each((i, element) => {
       pageUrls.push(element.attribs.href);
@@ -195,10 +195,10 @@ export class WikiScraper {
   }
 
   private parseFunctionPage(pageContent: string): Function {
-    const $ = cheerio.load(pageContent);
+    const $ = this.parseContent(pageContent);
     const name = $('function').attr().name;
     const parent = $('function').attr().parent;
-    const description = this.trimMultiLineString($('function > description').text());
+    const description = $('function > description').html();
     const realmsRaw = this.trimMultiLineString($('function > realm').text());
     const realms = this.parseRealms(realmsRaw);
     const args: Array<FunctionArgument> = [];
@@ -207,7 +207,7 @@ export class WikiScraper {
     $('function > args')
       .children()
       .each((i, element) => {
-        const description = $(element).text();
+        const description = $(element).html();
 
         const argument: FunctionArgument = {
           name: element.attribs.name,
@@ -228,7 +228,7 @@ export class WikiScraper {
     $('function > rets')
       .children()
       .each((i, element) => {
-        const description = $(element).text();
+        const description = $(element).html();
         const name = element.attribs.name;
 
         const returnValue: FunctionReturnValue = {
@@ -252,8 +252,8 @@ export class WikiScraper {
       realms: realms,
     };
 
-    if (description !== '') {
-      _function.description = description;
+    if (description && description !== '') {
+      _function.description = this.trimMultiLineString(description);
     }
 
     if (args.length > 0) {
@@ -268,42 +268,42 @@ export class WikiScraper {
   }
 
   private parsePanelPage(pageContent: string): Panel {
-    const $ = cheerio.load(pageContent);
+    const $ = this.parseContent(pageContent);
     const parent = this.trimMultiLineString($('panel > parent').text());
-    const description = this.trimMultiLineString($('panel > description').text());
+    const description = $('panel > description').html();
 
     const panel: Panel = {
       parent: parent,
     };
 
-    if (description !== '') {
-      panel.description = description;
+    if (description && description !== '') {
+      panel.description = this.trimMultiLineString(description);
     }
 
     return panel;
   }
 
   private parseTypePage(pageContent: string): Type {
-    const $ = cheerio.load(pageContent);
+    const $ = this.parseContent(pageContent);
     const name = $('type').attr().name;
-    const description = this.trimMultiLineString($('type > summary').text());
+    const description = $('type > summary').html();
 
     const type: Type = {
       name: name,
     };
 
-    if (description !== '') {
-      type.description = description;
+    if (description && description !== '') {
+      type.description = this.trimMultiLineString(description);
     }
 
     return type;
   }
 
   private parseEnumPage(pageContent: string): Enum {
-    const $ = cheerio.load(pageContent);
+    const $ = this.parseContent(pageContent);
     const realmsRaw = this.trimMultiLineString($('enum > realm').text());
     const realms = this.parseRealms(realmsRaw);
-    const description = $('enum > description').text();
+    const description = $('enum > description').html();
     const enumItems: Array<EnumItem> = [];
 
     $('enum > items')
@@ -311,7 +311,7 @@ export class WikiScraper {
       .each((i, element) => {
         const name = element.attribs.key;
         const value = element.attribs.value;
-        const description = $(element).text();
+        const description = $(element).html();
 
         const enumItem: EnumItem = {
           name: name,
@@ -361,26 +361,30 @@ export class WikiScraper {
     return Array.from(realms);
   }
 
+  private parseContent(content: string): CheerioStatic {
+    return cheerio.load(content, { decodeEntities: false });
+  }
+
   private isPanelPage(pageContent: string): boolean {
-    const $ = cheerio.load(pageContent);
+    const $ = this.parseContent(pageContent);
 
     return $('panel').length > 0;
   }
 
   private isFunctionPage(pageContent: string): boolean {
-    const $ = cheerio.load(pageContent);
+    const $ = this.parseContent(pageContent);
 
     return $('function').length > 0;
   }
 
   private isTypePage(pageContent: string): boolean {
-    const $ = cheerio.load(pageContent);
+    const $ = this.parseContent(pageContent);
 
     return $('type').length > 0;
   }
 
   private isEnumPage(pageContent: string): boolean {
-    const $ = cheerio.load(pageContent);
+    const $ = this.parseContent(pageContent);
 
     return $('enum').length > 0;
   }
