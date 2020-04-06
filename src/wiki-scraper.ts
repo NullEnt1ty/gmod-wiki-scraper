@@ -393,8 +393,7 @@ export class WikiScraper {
     return str
       .split('\n')
       .map(line => line.trim())
-      .filter(line => line !== '')
-      .join(' ')
+      .join('\n')
       .trim();
   }
 }
