@@ -2,7 +2,7 @@ import cheerio from 'cheerio';
 import { SingleBar, Presets } from 'cli-progress';
 import pLimit from 'p-limit';
 
-import { Function, FunctionArgument, FunctionReturnValue, Realm, Class, Panel, WikiPage, Type } from './types';
+import { Function, FunctionArgument, FunctionReturnValue, Realm, Class, Panel, WikiPage, Type, Enum, EnumItem } from './types';
 import { WikiApiClient } from './wiki-api-client';
 import logger from './logger';
 
@@ -101,6 +101,35 @@ export class WikiScraper {
     this.progressBar.stop();
 
     return this.buildClasses(panelPages);
+  }
+
+  public async getEnums(): Promise<Array<Enum>> {
+    const enumPageUrls = await this.getPagesInCategory('enum');
+    this.progressBar.start(enumPageUrls.length, 0);
+
+    const enumPages = await Promise.all(enumPageUrls.map(async (pageUrl) => {
+      const page = await WikiScraper.limit(() => this.wikiApiClient.retrievePage(pageUrl));
+      this.progressBar.increment();
+
+      return page;
+    }));
+
+    this.progressBar.stop();
+
+    const enums: Array<Enum> = [];
+
+    enumPages.forEach((enumPage) => {
+      if (this.isEnumPage(enumPage.content)) {
+        const _enum = this.parseEnumPage(enumPage.content);
+        _enum.name = enumPage.title;
+
+        enums.push(_enum);
+      } else {
+        logger.warn(`Unknown page type encountered on page '${enumPage.title}'`);
+      }
+    });
+
+    return enums;
   }
 
   private async getPagesInCategory(category: string, filter = ''): Promise<Array<string>> {
@@ -270,6 +299,44 @@ export class WikiScraper {
     return type;
   }
 
+  private parseEnumPage(pageContent: string): Enum {
+    const $ = cheerio.load(pageContent);
+    const realmsRaw = this.trimMultiLineString($('enum > realm').text());
+    const realms = this.parseRealms(realmsRaw);
+    const description = $('enum > description').text();
+    const enumItems: Array<EnumItem> = [];
+
+    $('enum > items')
+      .children()
+      .each((i, element) => {
+        const name = element.attribs.key;
+        const value = element.attribs.value;
+        const description = $(element).text();
+
+        const enumItem: EnumItem = {
+          name: name,
+          value: Number(value),
+        };
+
+        if (description && description !== '') {
+          enumItem.description = this.trimMultiLineString(description);
+        }
+
+        enumItems.push(enumItem);
+      });
+
+    const _enum: Enum = {
+      items: enumItems,
+      realms: realms,
+    };
+
+    if (description && description !== '') {
+      _enum.description = this.trimMultiLineString(description);
+    }
+
+    return _enum;
+  }
+
   private parseRealms(realmsRaw: string): Array<Realm> {
     const realms = new Set<Realm>();
     const realmsRawLower = realmsRaw.toLowerCase();
@@ -310,6 +377,12 @@ export class WikiScraper {
     const $ = cheerio.load(pageContent);
 
     return $('type').length > 0;
+  }
+
+  private isEnumPage(pageContent: string): boolean {
+    const $ = cheerio.load(pageContent);
+
+    return $('enum').length > 0;
   }
 
   private trimMultiLineString(str: string): string {

@@ -71,3 +71,16 @@ export interface Type {
   name: string;
   description?: string;
 }
+
+export interface EnumItem {
+  name: string;
+  description?: string;
+  value: number;
+}
+
+export interface Enum {
+  name?: string;
+  description?: string;
+  items: Array<EnumItem>;
+  realms: Array<Realm>;
+}
