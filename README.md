@@ -57,7 +57,7 @@ import { WikiApiClient, WikiScraper } from 'gmod-wiki-scraper';
 
 Output:
 
-```json
+```
 {
   name: 'Entity',
   parent: 'Global',
