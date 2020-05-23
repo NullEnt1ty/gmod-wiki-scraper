@@ -1,32 +1,36 @@
 {
   "name": "gmod-wiki-scraper",
   "version": "1.0.0",
-  "description": "",
+  "description": "Extract GLua API documentation from the new Garry's Mod wiki",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "bin": {
+    "gmod-wiki-scraper": "dist/app.js"
+  },
   "scripts": {
     "start": "ts-node src/app.ts",
     "build": "tsc",
-    "lint": "eslint \"src/**/*.ts\""
+    "lint": "eslint \"src/**/*.ts\"",
+    "prepublishOnly": "npm run build"
   },
   "author": "Dominique Mattern <dominique@mattern.dev>",
   "license": "MIT",
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",
-    "cli-progress": "^3.6.1",
-    "got": "^10.6.0",
-    "p-limit": "^2.2.2",
-    "pino": "^5.17.0",
-    "pino-pretty": "^3.6.1"
+    "cli-progress": "^3.8.2",
+    "got": "^11.1.4",
+    "p-limit": "^2.3.0",
+    "pino": "^6.2.1",
+    "pino-pretty": "^4.0.0"
   },
   "devDependencies": {
-    "@types/cheerio": "^0.22.16",
-    "@types/cli-progress": "^3.4.2",
-    "@types/pino": "^5.17.0",
-    "@typescript-eslint/eslint-plugin": "^2.26.0",
-    "@typescript-eslint/parser": "^2.26.0",
-    "eslint": "^6.8.0",
-    "ts-node": "^8.6.2",
-    "typescript": "^3.8.3"
+    "@types/cheerio": "^0.22.18",
+    "@types/cli-progress": "^3.7.0",
+    "@types/pino": "^6.0.1",
+    "@typescript-eslint/eslint-plugin": "^3.0.0",
+    "@typescript-eslint/parser": "^3.0.0",
+    "eslint": "^7.1.0",
+    "ts-node": "^8.10.1",
+    "typescript": "^3.9.3"
   }
 }
