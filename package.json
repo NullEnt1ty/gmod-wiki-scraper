@@ -2,7 +2,8 @@
   "name": "gmod-wiki-scraper",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/app.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "start": "ts-node src/app.ts",
     "build": "tsc",

@@ -174,7 +174,7 @@ export class WikiScraper {
     return structs;
   }
 
-  private async getPagesInCategory(category: string, filter = ''): Promise<Array<string>> {
+  public async getPagesInCategory(category: string, filter = ''): Promise<Array<string>> {
     const response = await this.wikiApiClient.renderText(`<pagelist category="${category}" filter="${filter}"></pagelist>`);
 
     if (!response.html || response.html === '') {
@@ -191,7 +191,7 @@ export class WikiScraper {
     return pageUrls;
   }
 
-  private buildClasses(wikiPages: Array<WikiPage>): Array<Class> {
+  public buildClasses(wikiPages: Array<WikiPage>): Array<Class> {
     const classes = new Map<string, Class>();
 
     wikiPages.forEach((wikiPage) => {
@@ -236,7 +236,7 @@ export class WikiScraper {
     return Array.from(classes.values());
   }
 
-  private parseFunctionPage(pageContent: string): Function {
+  public parseFunctionPage(pageContent: string): Function {
     const $ = this.parseContent(pageContent);
     const name = $('function').attr().name;
     const parent = $('function').attr().parent;
@@ -309,7 +309,7 @@ export class WikiScraper {
     return _function;
   }
 
-  private parsePanelPage(pageContent: string): Panel {
+  public parsePanelPage(pageContent: string): Panel {
     const $ = this.parseContent(pageContent);
     const parent = this.trimMultiLineString($('panel > parent').text());
     const description = $('panel > description').html();
@@ -325,7 +325,7 @@ export class WikiScraper {
     return panel;
   }
 
-  private parseTypePage(pageContent: string): Type {
+  public parseTypePage(pageContent: string): Type {
     const $ = this.parseContent(pageContent);
     const name = $('type').attr().name;
     const description = $('type > summary').html();
@@ -341,7 +341,7 @@ export class WikiScraper {
     return type;
   }
 
-  private parseEnumPage(pageContent: string): Enum {
+  public parseEnumPage(pageContent: string): Enum {
     const $ = this.parseContent(pageContent);
     const realmsRaw = this.trimMultiLineString($('enum > realm').text());
     const realms = this.parseRealms(realmsRaw);
@@ -379,7 +379,7 @@ export class WikiScraper {
     return _enum;
   }
 
-  private parseStructPage(pageContent: string): Struct {
+  public parseStructPage(pageContent: string): Struct {
     const $ = this.parseContent(pageContent);
     const realmsRaw = this.trimMultiLineString($('structure > realm').text());
     const realms = this.parseRealms(realmsRaw);
@@ -421,7 +421,7 @@ export class WikiScraper {
     return struct;
   }
 
-  private parseRealms(realmsRaw: string): Array<Realm> {
+  public parseRealms(realmsRaw: string): Array<Realm> {
     const realms = new Set<Realm>();
     const realmsRawLower = realmsRaw.toLowerCase();
 
@@ -445,38 +445,38 @@ export class WikiScraper {
     return Array.from(realms);
   }
 
-  private parseContent(content: string): CheerioStatic {
-    return cheerio.load(content, { decodeEntities: false });
-  }
-
-  private isPanelPage(pageContent: string): boolean {
+  public isPanelPage(pageContent: string): boolean {
     const $ = this.parseContent(pageContent);
 
     return $('panel').length > 0;
   }
 
-  private isFunctionPage(pageContent: string): boolean {
+  public isFunctionPage(pageContent: string): boolean {
     const $ = this.parseContent(pageContent);
 
     return $('function').length > 0;
   }
 
-  private isTypePage(pageContent: string): boolean {
+  public isTypePage(pageContent: string): boolean {
     const $ = this.parseContent(pageContent);
 
     return $('type').length > 0;
   }
 
-  private isEnumPage(pageContent: string): boolean {
+  public isEnumPage(pageContent: string): boolean {
     const $ = this.parseContent(pageContent);
 
     return $('enum').length > 0;
   }
 
-  private isStructPage(pageContent: string): boolean {
+  public isStructPage(pageContent: string): boolean {
     const $ = this.parseContent(pageContent);
 
     return $('structure').length > 0;
+  }
+
+  private parseContent(content: string): CheerioStatic {
+    return cheerio.load(content, { decodeEntities: false });
   }
 
   private trimMultiLineString(str: string): string {
