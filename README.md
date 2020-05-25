@@ -26,8 +26,24 @@ gmod-wiki-scraper
 This will retrieve all functions, hooks, enums, etc. from the wiki and save
 them as JSON files into an output directory in your current working directory.
 
-It is currently not possible to retrieve single functions or categories. There
-might be a CLI to allow this in the future.
+gmod-wiki-scraper features a rudimentary cli:
+
+```
+$ gmod-wiki-scraper --help
+
+Usage: gmod-wiki-scraper [OPTIONS]
+
+Options:
+  --help                   Show help                                   [boolean]
+  --version, -v            Print the version of gmod-wiki-scraper      [boolean]
+  --skip-global-functions  Do not retrieve global functions            [boolean]
+  --skip-classes           Do not retrieve classes                     [boolean]
+  --skip-libraries         Do not retrieve libraries                   [boolean]
+  --skip-hooks             Do not retrieve hooks                       [boolean]
+  --skip-panels            Do not retrieve panels                      [boolean]
+  --skip-enums             Do not retrieve enums                       [boolean]
+  --skip-structs           Do not retrieve structs                     [boolean]
+```
 
 ## API
 
