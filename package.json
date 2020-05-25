@@ -1,6 +1,6 @@
 {
   "name": "gmod-wiki-scraper",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Extract GLua API documentation from the new Garry's Mod wiki",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
