@@ -311,8 +311,8 @@ export class WikiScraper {
     if (sourceFile.length > 0) {
       const file = $(sourceFile).text();
 
-      const line = $(sourceFile).attr().line;
-      const lines = line.split('-L');
+      const line = $(sourceFile).attr().line.replace('L', '');
+      const lines = line.split('-');
       const lineStart = lines[0];
       const lineEnd = lines[1];
 
