@@ -10,7 +10,7 @@
       ],
       "cwd": "${workspaceFolder}",
       "runtimeArgs": ["-r", "ts-node/register"],
-      "args": ["src/app.ts"],
+      "args": ["src/cli.ts"],
       "console": "internalConsole",
       "outputCapture": "std"
     }
