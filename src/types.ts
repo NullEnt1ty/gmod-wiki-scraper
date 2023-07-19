@@ -58,9 +58,16 @@ export interface FunctionReturnValue {
   description?: string;
 }
 
+export interface FunctionSource {
+  file: string;
+  lineStart: number;
+  lineEnd?: number;
+}
+
 export interface Function {
   name: string;
   parent: string;
+  source?: FunctionSource;
   description?: string;
   realms: Array<Realm>;
   arguments?: Array<FunctionArgument>;
