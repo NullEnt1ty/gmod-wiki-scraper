@@ -4,6 +4,7 @@ import pLimit from 'p-limit';
 
 import {
   Function,
+  FunctionSource,
   FunctionArgument,
   FunctionReturnValue,
   Realm,
@@ -241,6 +242,7 @@ export class WikiScraper {
     const name = $('function').attr().name;
     const parent = $('function').attr().parent;
     const description = $('function > description').html();
+    const $sourceFile = $('function > file');
     const realmsRaw = this.trimMultiLineString($('function > realm').text());
     const realms = this.parseRealms(realmsRaw);
     const args: Array<FunctionArgument> = [];
@@ -304,6 +306,26 @@ export class WikiScraper {
 
     if (returnValues.length > 0) {
       _function.returnValues = returnValues;
+    }
+
+    if ($sourceFile.length > 0) {
+      const file = $sourceFile.text();
+
+      const line = $sourceFile.attr().line.replace('L', '');
+      const lines = line.split('-');
+      const lineStart = lines[0];
+      const lineEnd = lines[1];
+
+      const source: FunctionSource = {
+        file: file,
+        lineStart: Number(lineStart),
+      };
+
+      if (lineEnd) {
+        source.lineEnd = Number(lineEnd);
+      }
+
+      _function.source = source;
     }
 
     return _function;
