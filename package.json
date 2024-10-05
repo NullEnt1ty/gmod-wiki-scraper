@@ -11,7 +11,8 @@
     "start": "ts-node src/cli.ts",
     "build": "tsc",
     "lint": "eslint \"src/**/*.ts\"",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "test": "vitest"
   },
   "author": "Dominique Mattern <dominique@mattern.dev>",
   "license": "MIT",
@@ -31,6 +32,7 @@
     "@types/yargs": "^15.0.5",
     "prettier": "^3.3.3",
     "ts-node": "^10.9.2",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.3",
+    "vitest": "^2.1.1"
   }
 }
