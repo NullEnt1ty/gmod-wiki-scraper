@@ -51,7 +51,7 @@ function ensureOutputDirExists(): void {
 		fs.mkdirSync(outputDir);
 	} catch (error) {
 		if (error.code === "EEXIST") {
-			logger.warn(`Output directory '${outputDir}' already exists.`);
+			logger.info(`Output directory '${outputDir}' already exists.`);
 		} else {
 			throw error;
 		}
