@@ -58,6 +58,11 @@ export interface FunctionReturnValue {
 	description?: string;
 }
 
+export interface FunctionOverload {
+	arguments: Array<FunctionArgument>;
+	returnValues?: Array<FunctionReturnValue>;
+}
+
 export interface FunctionSource {
 	file: string;
 	lineStart: number;
@@ -72,6 +77,7 @@ export interface Function {
 	realms: Array<Realm>;
 	arguments?: Array<FunctionArgument>;
 	returnValues?: Array<FunctionReturnValue>;
+	overloads?: Array<FunctionOverload>;
 }
 
 export interface Type {

@@ -19,6 +19,7 @@ import {
 } from "./types.js";
 import { WikiApiClient } from "./wiki-api-client.js";
 import logger from "./logger.js";
+import { isTagElement } from "./cheerio.js";
 
 export class WikiScraper {
 	private static readonly limit = pLimit(8);
@@ -294,32 +295,20 @@ export class WikiScraper {
 		const realmsRaw = this.trimMultiLineString($("function > realm").text());
 		const realms = this.parseRealms(realmsRaw);
 		const args: Array<FunctionArgument> = [];
+		const overloadedArgs: Array<Array<FunctionArgument>> = [];
 		const returnValues: Array<FunctionReturnValue> = [];
 
-		$("function > args")
-			.children()
-			.each((i, element) => {
-				if (element.type !== "tag") {
-					return;
-				}
+		const [argsElement, ...overloadArgsElements] = $("function > args");
 
-				const description = $(element).html();
+		if (argsElement != null) {
+			args.push(...this.parseFunctionArguments(argsElement));
+		}
 
-				const argument: FunctionArgument = {
-					name: element.attribs.name,
-					type: element.attribs.type,
-				};
-
-				if (element.attribs.default) {
-					argument.default = element.attribs.default;
-				}
-
-				if (description && description !== "") {
-					argument.description = this.trimMultiLineString(description);
-				}
-
-				args.push(argument);
-			});
+		if (overloadArgsElements.length > 0) {
+			for (const overloadArgsElement of overloadArgsElements) {
+				overloadedArgs.push(this.parseFunctionArguments(overloadArgsElement));
+			}
+		}
 
 		$("function > rets")
 			.children()
@@ -362,6 +351,15 @@ export class WikiScraper {
 
 		if (returnValues.length > 0) {
 			_function.returnValues = returnValues;
+		}
+
+		if (overloadedArgs.length > 0) {
+			_function.overloads = overloadedArgs.map((args) => {
+				return {
+					arguments: args,
+					returnValues: returnValues.length > 0 ? returnValues : undefined,
+				};
+			});
 		}
 
 		if ($sourceFile.length > 0) {
@@ -559,6 +557,34 @@ export class WikiScraper {
 		const $ = this.parseContent(pageContent);
 
 		return $("structure").length > 0;
+	}
+
+	private parseFunctionArguments(argsElement: cheerio.Element) {
+		if (!isTagElement(argsElement)) {
+			throw new Error(`Expected a tag element, got ${argsElement.type}`);
+		}
+
+		return argsElement.children
+			.filter(isTagElement)
+			.map((element): FunctionArgument => {
+				const name = element.attribs.name;
+				const type = element.attribs.type;
+				const defaultValue = element.attribs.default;
+
+				let description = cheerio
+					.load(element.children, { decodeEntities: false })
+					.html();
+				if (description != null && description !== "") {
+					description = this.trimMultiLineString(description);
+				}
+
+				return {
+					name: name,
+					type: type,
+					default: defaultValue,
+					description: description,
+				};
+			});
 	}
 
 	private parseContent(content: string) {
