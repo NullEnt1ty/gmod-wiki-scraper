@@ -60,15 +60,13 @@ This will retrieve the content of [Global.Entity](https://wiki.facepunch.com/gmo
 ```typescript
 import { WikiApiClient, WikiScraper } from 'gmod-wiki-scraper';
 
-(async (): Promise<void> => {
-  const client = new WikiApiClient();
-  const scraper = new WikiScraper(client);
+const client = new WikiApiClient();
+const scraper = new WikiScraper(client);
 
-  const page = await client.retrievePage('Global.Entity')
-  const parsedFunctionPage = scraper.parseFunctionPage(page.content);
+const page = await client.retrievePage('Global.Entity')
+const parsedFunctionPage = scraper.parseFunctionPage(page.content);
 
-  console.log(parsedFunctionPage);
-})();
+console.log(parsedFunctionPage);
 ```
 
 Output:
