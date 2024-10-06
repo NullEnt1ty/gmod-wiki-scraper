@@ -1,48 +1,47 @@
 #!/usr/bin/env node
 
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
 
-import { WikiScraper } from "./wiki-scraper";
-import { WikiApiClient } from "./wiki-api-client";
-import logger from "./logger";
+import { WikiScraper } from "./wiki-scraper.js";
+import { WikiApiClient } from "./wiki-api-client.js";
+import logger from "./logger.js";
 
-const argv = yargs.usage("Usage: $0 [OPTIONS]").options({
-	version: {
-		alias: "v",
-		boolean: true,
-		description: "Print the version of gmod-wiki-scraper",
-	},
-	"skip-global-functions": {
-		boolean: true,
-		describe: "Do not retrieve global functions",
-	},
-	"skip-classes": {
-		boolean: true,
-		describe: "Do not retrieve classes",
-	},
-	"skip-libraries": {
-		boolean: true,
-		describe: "Do not retrieve libraries",
-	},
-	"skip-hooks": {
-		boolean: true,
-		describe: "Do not retrieve hooks",
-	},
-	"skip-panels": {
-		boolean: true,
-		describe: "Do not retrieve panels",
-	},
-	"skip-enums": {
-		boolean: true,
-		describe: "Do not retrieve enums",
-	},
-	"skip-structs": {
-		boolean: true,
-		describe: "Do not retrieve structs",
-	},
-}).argv;
+const argv = yargs(hideBin(process.argv))
+	.usage("Usage: $0 [OPTIONS]")
+	.options({
+		"skip-global-functions": {
+			boolean: true,
+			describe: "Do not retrieve global functions",
+		},
+		"skip-classes": {
+			boolean: true,
+			describe: "Do not retrieve classes",
+		},
+		"skip-libraries": {
+			boolean: true,
+			describe: "Do not retrieve libraries",
+		},
+		"skip-hooks": {
+			boolean: true,
+			describe: "Do not retrieve hooks",
+		},
+		"skip-panels": {
+			boolean: true,
+			describe: "Do not retrieve panels",
+		},
+		"skip-enums": {
+			boolean: true,
+			describe: "Do not retrieve enums",
+		},
+		"skip-structs": {
+			boolean: true,
+			describe: "Do not retrieve structs",
+		},
+	})
+	.parseSync();
 
 const outputDir = "output";
 

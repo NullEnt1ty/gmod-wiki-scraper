@@ -1,9 +1,11 @@
-import pino from "pino";
+import { pino } from "pino";
 
 const logger = pino({
-	prettyPrint: true,
 	base: null,
 	timestamp: pino.stdTimeFunctions.isoTime,
+	transport: {
+		target: "pino-pretty",
+	},
 });
 
-export = logger;
+export default logger;

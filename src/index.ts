@@ -1,3 +1,3 @@
-export * from "./types";
-export * from "./wiki-api-client";
-export * from "./wiki-scraper";
+export * from "./types.js";
+export * from "./wiki-api-client.js";
+export * from "./wiki-scraper.js";

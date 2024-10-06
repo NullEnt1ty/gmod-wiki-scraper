@@ -1,6 +1,6 @@
 import got from "got";
 
-import { PagePreviewResponse, WikiPage, PageJsonResponse } from "./types";
+import { PagePreviewResponse, WikiPage, PageJsonResponse } from "./types.js";
 
 export class WikiApiClient {
 	public static readonly wikiUrl = "https://wiki.facepunch.com";

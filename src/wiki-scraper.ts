@@ -1,4 +1,4 @@
-import cheerio from "cheerio";
+import * as cheerio from "cheerio";
 import { SingleBar, Presets } from "cli-progress";
 import pLimit from "p-limit";
 
@@ -16,9 +16,9 @@ import {
 	EnumField,
 	StructField,
 	Struct,
-} from "./types";
-import { WikiApiClient } from "./wiki-api-client";
-import logger from "./logger";
+} from "./types.js";
+import { WikiApiClient } from "./wiki-api-client.js";
+import logger from "./logger.js";
 
 export class WikiScraper {
 	private static readonly limit = pLimit(8);
@@ -229,6 +229,9 @@ export class WikiScraper {
 		const $ = this.parseContent(response.html);
 
 		$("ul > li > a").each((i, element) => {
+			if (element.type !== "tag") {
+				return;
+			}
 			pageUrls.push(element.attribs.href);
 		});
 
@@ -296,6 +299,10 @@ export class WikiScraper {
 		$("function > args")
 			.children()
 			.each((i, element) => {
+				if (element.type !== "tag") {
+					return;
+				}
+
 				const description = $(element).html();
 
 				const argument: FunctionArgument = {
@@ -317,6 +324,10 @@ export class WikiScraper {
 		$("function > rets")
 			.children()
 			.each((i, element) => {
+				if (element.type !== "tag") {
+					return;
+				}
+
 				const description = $(element).html();
 				const name = element.attribs.name;
 
@@ -418,6 +429,10 @@ export class WikiScraper {
 		$("enum > items")
 			.children()
 			.each((i, element) => {
+				if (element.type !== "tag") {
+					return;
+				}
+
 				const name = element.attribs.key;
 				const value = element.attribs.value;
 				const description = $(element).html();
@@ -456,6 +471,10 @@ export class WikiScraper {
 		$("structure > fields")
 			.children()
 			.each((i, element) => {
+				if (element.type !== "tag") {
+					return;
+				}
+
 				const name = element.attribs.name;
 				const type = element.attribs.type;
 				const description = $(element).html();
@@ -542,11 +561,11 @@ export class WikiScraper {
 		return $("structure").length > 0;
 	}
 
-	private parseContent(content: string): CheerioStatic {
+	private parseContent(content: string) {
 		return cheerio.load(content, { decodeEntities: false });
 	}
 
-	private trimMultiLineString(str: string): string {
+	private trimMultiLineString(str: string) {
 		return str
 			.split("\n")
 			.map((line) => line.trim())
