@@ -5,7 +5,7 @@ accessed via https://wiki.facepunch.com/gmod/.
 
 ## Prerequisites
 
-- Node.js `>= 20`
+- Node.js `>= 18.17`
 - npm `>= 7`
 
 npm often comes bundled with Node.js so you probably won't need to install that
