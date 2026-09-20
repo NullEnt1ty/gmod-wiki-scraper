@@ -3,3 +3,5 @@ output/
 src/
 .prettierrc
 tsconfig.json
+docs/
+AGENTS.md
