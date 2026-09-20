@@ -2,6 +2,14 @@
 	"name": "gmod-wiki-scraper",
 	"version": "2.1.0",
 	"description": "Extract GLua API documentation from the new Garry's Mod wiki",
+	"keywords": [
+		"gmod",
+		"garry's mod",
+		"glua",
+		"lua",
+		"wiki",
+		"scraper"
+	],
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/NullEnt1ty/gmod-wiki-scraper.git"
