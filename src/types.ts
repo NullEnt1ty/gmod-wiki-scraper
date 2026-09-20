@@ -38,6 +38,7 @@ export interface Class {
 	parent?: string;
 	description?: string;
 	functions?: Array<Function>;
+	fields?: Array<ClassField>;
 }
 
 export interface Panel {
@@ -78,6 +79,15 @@ export interface Function {
 	arguments?: Array<FunctionArgument>;
 	returnValues?: Array<FunctionReturnValue>;
 	overloads?: Array<FunctionOverload>;
+}
+
+export interface ClassField {
+	name: string;
+	type: string;
+	parent: string;
+	source?: FunctionSource;
+	description?: string;
+	realms: Array<Realm>;
 }
 
 export interface Type {

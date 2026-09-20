@@ -8,6 +8,7 @@ import {
 	FunctionArgument,
 	FunctionReturnValue,
 	Realm,
+	ClassField,
 	Class,
 	Panel,
 	WikiPage,
@@ -269,6 +270,11 @@ export class WikiScraper {
 				if (type.description) {
 					_class.description = type.description;
 				}
+			} else if (this.isClassFieldPage(wikiPage.content)) {
+				const field = this.parseFieldPage(wikiPage.content);
+
+				_class.fields = _class.fields ?? [];
+				_class.fields.push(field);
 			} else if (this.isFunctionPage(wikiPage.content)) {
 				const _function = this.parseFunctionPage(wikiPage.content);
 
@@ -284,6 +290,43 @@ export class WikiScraper {
 		});
 
 		return Array.from(classes.values());
+	}
+
+	public parseFieldPage(pageContent: string): ClassField {
+		const $ = this.parseContent(pageContent);
+		const name = $("function").attr().name;
+		const parent = $("function").attr().parent;
+		let rawDescription = $("function > description").html();
+		const $sourceFile = $("function > file");
+		const realmsRaw = this.trimMultiLineString($("function > realm").text());
+		const realms = this.parseRealms(realmsRaw);
+
+		const typeEl = $("function > rets")
+			.children()
+			.filter((_, el) => el.type == "tag")
+			.first();
+
+		const type = typeEl.attr("type") ?? "nil"
+
+		// Currently all the fields define both a normal description and a
+		// return description, but since the return description seems to mostly
+		// be useless, only pick it if there is no real description
+		if (!this.isValidDescription(rawDescription)) {
+			rawDescription = $(typeEl).html();
+		}
+		let description: string | undefined = undefined
+		if (this.isValidDescription(rawDescription)) {
+			description = this.trimMultiLineString(rawDescription);
+		}
+
+		return {
+			name,
+			type,
+			description,
+			parent,
+			realms,
+			source: this.parseSourceFile($sourceFile)
+		};
 	}
 
 	public parseFunctionPage(pageContent: string): Function {
@@ -339,6 +382,7 @@ export class WikiScraper {
 			name: name,
 			parent: parent,
 			realms: realms,
+			source: this.parseSourceFile($sourceFile)
 		};
 
 		if (description && description !== "") {
@@ -362,27 +406,31 @@ export class WikiScraper {
 			});
 		}
 
-		if ($sourceFile.length > 0) {
-			const file = $sourceFile.text();
+		return _function;
+	}
 
-			const line = $sourceFile.attr().line.replace("L", "");
-			const lines = line.split("-");
-			const lineStart = lines[0];
-			const lineEnd = lines[1];
-
-			const source: FunctionSource = {
-				file: file,
-				lineStart: Number(lineStart),
-			};
-
-			if (lineEnd) {
-				source.lineEnd = Number(lineEnd);
-			}
-
-			_function.source = source;
+	private parseSourceFile($sourceFile: cheerio.Cheerio): FunctionSource | undefined {
+		if ($sourceFile.length == 0) {
+			return undefined
 		}
 
-		return _function;
+		const file = $sourceFile.text();
+
+		const line = $sourceFile.attr().line.replace("L", "");
+		const lines = line.split("-");
+		const lineStart = lines[0];
+		const lineEnd = lines[1];
+
+		const source: FunctionSource = {
+			file: file,
+			lineStart: Number(lineStart),
+		};
+
+		if (lineEnd) {
+			source.lineEnd = Number(lineEnd);
+		}
+
+		return source;
 	}
 
 	public parsePanelPage(pageContent: string): Panel {
@@ -535,6 +583,12 @@ export class WikiScraper {
 		return $("panel").length > 0;
 	}
 
+	public isClassFieldPage(pageContent: string): boolean {
+		const $ = this.parseContent(pageContent);
+
+		return $("function[type$=field]").length > 0;
+	}
+
 	public isFunctionPage(pageContent: string): boolean {
 		const $ = this.parseContent(pageContent);
 
@@ -589,6 +643,10 @@ export class WikiScraper {
 
 	private parseContent(content: string) {
 		return cheerio.load(content, { decodeEntities: false });
+	}
+
+	private isValidDescription(str: string | null): str is string {
+		return str != null && str != ""
 	}
 
 	private trimMultiLineString(str: string) {

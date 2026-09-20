@@ -66,6 +66,70 @@ describe("WikiScraper", () => {
 		]);
 	});
 
+	it("parses a field page", () => {
+		const mathPiPageContent =
+			'<function name="pi" parent="math" type="libraryfield">\r\n' +
+			"\t<description>\r\n" +
+			"A variable containing the mathematical constant pi. (`3.1415926535898`)\r\n" +
+			"\r\n" +
+			"See also: <page>Trigonometry</page>\r\n" +
+			"\r\n" +
+			"<note>It should be noted that due to the nature of floating point numbers, results of calculations with `math.pi` may not be what you expect. See second example below.</note>\r\n" +
+			"</description>\r\n" +
+			"\t<realm>Shared and Menu</realm>\r\n" +
+			"\t<rets>\r\n" +
+			'\t\t<ret name="" type="number">The mathematical constant, Pi.</ret>\r\n' +
+			"\t</rets>\r\n" +
+			"</function>\r\n" +
+			"\r\n" +
+			"<example>\r\n" +
+			"<code>\r\n" +
+			"print( math.cos( math.pi ) )\r\n" +
+			"</code>\r\n" +
+			"<output>\r\n" +
+			"```\r\n" +
+			"-1\r\n" +
+			"```\r\n" +
+			"</output>\r\n" +
+			"</example>\r\n" +
+			"\r\n" +
+			"<example>\r\n" +
+			"<description>\r\n" +
+			"\r\n" +
+			"`sin(π) = 0`, but because floating point precision is not unlimited it cannot be calculated as exactly `0`.\r\n" +
+			"</description>\r\n" +
+			"<code>\r\n" +
+			"print( math.sin( math.pi ), math.sin( math.pi ) == 0 )\r\n" +
+			"</code>\r\n" +
+			"<output>\r\n" +
+			"```\r\n" +
+			"1.2246467991474e-16 false\r\n" +
+			"```\r\n" +
+			"</output>\r\n" +
+			"</example>\r\n";
+
+		const isField = wikiScraper.isClassFieldPage(mathPiPageContent);
+		expect(isField).toBeTruthy()
+
+		const mathPiField = wikiScraper.parseFieldPage(mathPiPageContent);
+
+		expect(mathPiField.name).toBe("pi");
+		expect(mathPiField.parent).toBe("math");
+		expect(mathPiField.realms).toEqual(
+			expect.arrayContaining(["client", "server", "menu"]),
+		);
+		expect(mathPiField.type).toBe("number");
+		const expectedDesc = `
+A variable containing the mathematical constant pi. (\`3.1415926535898\`)
+
+See also: <page>Trigonometry</page>
+
+<note>It should be noted that due to the nature of floating point numbers, results of calculations with \`math.pi\` may not be what you expect. See second example below.</note>
+`
+		expect(mathPiField.description).toBe(expectedDesc.trim());
+	});
+
+
 	it("parses a panel page", () => {
 		const dbuttonPageContent =
 			"<panel>\r\n" +
