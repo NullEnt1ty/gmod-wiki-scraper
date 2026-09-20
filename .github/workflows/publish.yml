@@ -17,12 +17,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out release
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.release.tag_name }}
 
       - name: Set up Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: 24
           registry-url: https://registry.npmjs.org
@@ -49,8 +49,8 @@ jobs:
 
       - name: Publish stable release
         if: ${{ !github.event.release.prerelease }}
-        run: npm publish
+        run: npm stage publish
 
       - name: Publish prerelease
         if: ${{ github.event.release.prerelease }}
-        run: npm publish --tag next
+        run: npm stage publish --tag next
